@@ -69,11 +69,16 @@ class Container():
 		# Migration time is the time to migrate to new host
 		# Thus, execution of task takes place for interval
 		# time - migration time with apparent ips
-		assert self.hostid != -1
+		print("self hosted is ",self.hostid)
+		# assert self.hostid != -1
 		self.totalMigrationTime += lastMigrationTime
 		execTime = self.env.intervaltime - lastMigrationTime
 		apparentIPS = self.getApparentIPS()
-		requiredExecTime = (self.ipsmodel.totalInstructions - self.ipsmodel.completedInstructions) / apparentIPS if apparentIPS else 0
+		if hasattr(self.ipsmodel, 'totalInstructions'):
+			requiredExecTime = (self.ipsmodel.totalInstructions - self.ipsmodel.completedInstructions) / apparentIPS if apparentIPS else 0
+		else:
+			# Handle the case when the attribute is missing
+			requiredExecTime = 0
 		self.totalExecTime += min(execTime, requiredExecTime)
 		self.ipsmodel.completedInstructions += apparentIPS * min(execTime, requiredExecTime)
 

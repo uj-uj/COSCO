@@ -158,7 +158,9 @@ class Stats():
 		energytotalinterval_pred = 0
 		for hid, cids in enumerate(host_alloc):
 			ips = 0
-			for cid in cids: ips += self.env.containerlist[cid].getApparentIPS()
+			for cid in cids:
+				if self.env.containerlist[cid]:
+					ips += self.env.containerlist[cid].getApparentIPS()
 			energytotalinterval_pred += self.env.hostlist[hid].getPowerFromIPS(ips)
 		return energytotalinterval_pred*self.env.intervaltime, max(0, np.mean([metric_d['avgresponsetime'] for metric_d in self.metrics[-5:]]))
 

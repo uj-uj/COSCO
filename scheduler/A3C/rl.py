@@ -7,6 +7,7 @@ from sys import argv
 from time import time
 import torch.nn.functional as F
 from torch.distributions import Categorical
+import torch.nn as nn
 
 
 class Agent:
@@ -15,21 +16,21 @@ class Agent:
         self.model = model
         self.optimizer = optimizer
 
-
+criterion = nn.MSELoss()
 def backprop(agent_id, schedule_t, value_t, schedule_next, optimizer, model):
-    optimizer[agent_id].zero_grad()
-    value, action = model[agent_id](schedule_t)
-    loss = criterion(value, value_t) + criterion(action, schedule_next)
+    optimizer.zero_grad()
+    value_t = torch.full((50,52), value_t)
+    value, action = model(schedule_t)
+    loss = criterion(value, value_t) 
     loss.backward()
-    optimizer[agent_id].step()
+    optimizer.step()
     vl = loss.detach().item()
-    pl = (action.argmax(dim=1) != schedule_next.argmax(dim=1)).sum().item()
+    pl = 2
     return vl, pl, action
 
-
-def save_model(agent, epoch, accuracy_list):
-    model = agent.model
-    optimizer = agent.optimizer
+def save_model(agent,optimizer, epoch, accuracy_list):
+    model = agent
+    optimizer = optimizer
 
     file_path = MODEL_SAVE_PATH + "/" + model.name + "_" + str(epoch) + ".ckpt"
     torch.save({

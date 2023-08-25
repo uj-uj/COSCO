@@ -57,6 +57,7 @@ class DRLScheduler(Scheduler):
 		self.epoch += 1
 		schedule_next, prev_alloc = self.get_current_schedule()
 		value_t = self.get_last_value() if self.last_schedule != None else 0.5
+		print("^^^^ the value of value -t is",value_t)
 		schedule_t = self.last_schedule if self.last_schedule != None else schedule_next
 		if self.training and len(self.buffer) >= 10:
 			for replay in sample(self.buffer, 10):

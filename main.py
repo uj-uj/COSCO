@@ -22,6 +22,7 @@ from framework.workload.AIoTBenchWorkload import *
 # Simulator imports
 from simulator.Simulator import *
 from simulator.environment.AzureFog import *
+from simulator.environment.SimpleFog import *
 from simulator.environment.BitbrainFog import *
 from simulator.workload.BitbrainWorkload2 import *
 from simulator.workload.Azure2017Workload import *
@@ -107,8 +108,9 @@ def initalizeEnvironment(environment, logger):
 	
 	# Initialize scheduler
 	''' Can be LRMMTR, RF, RL, RM, Random, RLRMMTR, TMCR, TMMR, TMMTR, GA, GOBI (arg = 'energy_latency_'+str(HOSTS)) '''
-	# scheduler = GOBIScheduler('energy_latency_'+str(HOSTS))  GOBIScheduler('energy_latency_'+str(HOSTS))
-	scheduler = DMARLScheduler('energy_latency_')
+	# scheduler = GOBIScheduler('energy_latency_'+str(HOSTS)) #GOBIScheduler('energy_latency_'+str(HOSTS))
+	scheduler = DMARLScheduler('energy_latency_'+str(HOSTS),True)
+	# scheduler = DRLScheduler('energy_latency_'+str(HOSTS),True)
 
 	# Initialize Environment
 	hostlist = datacenter.generateHosts()

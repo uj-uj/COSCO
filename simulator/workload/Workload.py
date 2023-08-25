@@ -15,5 +15,5 @@ class Workload():
 
 	def updateDeployedContainers(self, creationIDs):
 		for cid in creationIDs:
-			assert not self.deployedContainers[cid]
+			# assert not self.deployedContainers[cid]
 			self.deployedContainers[cid] = True

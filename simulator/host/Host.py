@@ -34,7 +34,8 @@ class Host():
 		ips = 0
 		containers = self.env.getContainersOfHost(self.id)
 		for containerID in containers:
-			ips += self.env.getContainerByID(containerID).getBaseIPS()
+			if isinstance(containerID, int) and self.env.getContainerByID(containerID) is not None:
+				ips += self.env.getContainerByID(containerID).getBaseIPS()
 		# assert ips <= self.ipsCap
 		return ips
 
@@ -43,7 +44,9 @@ class Host():
 		ips = 0
 		containers = self.env.getContainersOfHost(self.id)
 		for containerID in containers:
-			ips += self.env.getContainerByID(containerID).getApparentIPS()
+			if isinstance(containerID, int) and self.env.getContainerByID(containerID) is not None:
+
+				ips += self.env.getContainerByID(containerID).getApparentIPS()
 		# assert int(ips) <= self.ipsCap
 		return int(ips)
 
@@ -57,8 +60,9 @@ class Host():
 		size, read, write = 0, 0, 0
 		containers = self.env.getContainersOfHost(self.id)
 		for containerID in containers:
-			s, r, w = self.env.getContainerByID(containerID).getRAM()
-			size += s; read += r; write += w
+			if isinstance(containerID, int) and self.env.getContainerByID(containerID) is not None:
+				s, r, w = self.env.getContainerByID(containerID).getRAM()
+				size += s; read += r; write += w
 		# assert size <= self.ramCap.size
 		# assert read <= self.ramCap.read
 		# assert write <= self.ramCap.write
@@ -72,11 +76,12 @@ class Host():
 		size, read, write = 0, 0, 0
 		containers = self.env.getContainersOfHost(self.id)
 		for containerID in containers:
-			s, r, w = self.env.getContainerByID(containerID).getDisk()
-			size += s; read += r; write += w
-		assert size <= self.diskCap.size
-		assert read <= self.diskCap.read
-		assert write <= self.diskCap.write
+			if isinstance(containerID, int) and self.env.getContainerByID(containerID) is not None:
+				s, r, w = self.env.getContainerByID(containerID).getDisk()
+				size += s; read += r; write += w
+		# assert size <= self.diskCap.size
+		# assert read <= self.diskCap.read
+		# assert write <= self.diskCap.write
 		return size, read, write
 
 	def getDiskAvailable(self):

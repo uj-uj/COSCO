@@ -12,6 +12,7 @@ from sys import argv
 plt.style.use(['science', 'ieee'])
 plt.rcParams["text.usetex"] = True
 plt.rcParams['figure.figsize'] = 2, 1.2
+plt.rcParams["font.family"] = "Arial"
 
 if 'train' in argv[0] and not os.path.exists(MODEL_SAVE_PATH):
 	os.mkdir(MODEL_SAVE_PATH)
@@ -38,7 +39,7 @@ class color:
 def load_energy_data():
 	dataset_path = 'datasets/energy_scheduling.csv'
 	data = pd.read_csv(dataset_path) if os.path.exists(dataset_path) else pd.read_csv('scheduler/BaGTI/'+dataset_path)
-	data = data.values.astype(np.float)
+	data = data.values.astype(np.float64)
 	dataset = []
 	print("Dataset size", data.shape[0])
 	for i in range(data.shape[0]):
@@ -57,7 +58,7 @@ def load_energy_data():
 def load_energy_latency_data(HOSTS):
 	dataset_path = 'datasets/energy_latency_'+str(HOSTS)+'_scheduling.csv'
 	data = pd.read_csv(dataset_path) if os.path.exists(dataset_path) else pd.read_csv('scheduler/BaGTI/'+dataset_path)
-	data = data.values.astype(np.float)
+	data = data.values.astype(np.float64)
 	max_ips_container = max(data.max(0)[HOSTS:2*HOSTS])
 	dataset = []
 	print("Dataset size", data.shape[0])
@@ -80,7 +81,7 @@ def load_energy_latency_data(HOSTS):
 def load_energy_latency2_data(HOSTS):
 	dataset_path = 'datasets/energy_latency2_'+str(HOSTS)+'_scheduling.csv'
 	data = pd.read_csv(dataset_path, header=None) if os.path.exists(dataset_path) else pd.read_csv('scheduler/BaGTI/'+dataset_path, header=None)
-	data = data.values.astype(np.float)
+	data = data.values.astype(np.float64)
 	max_ips_container = max(data.max(0)[HOSTS:2*HOSTS])
 	max_energy = data.max(0)[3*HOSTS]
 	max_response = data.max(0)[3*HOSTS+1]

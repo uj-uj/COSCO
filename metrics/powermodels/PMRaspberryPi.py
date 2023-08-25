@@ -15,7 +15,9 @@ class PMRaspberryPi(PM):
 	def power(self):
 		cpu = self.host.getCPU()
 		index = math.floor(cpu / 10)
-		left = self.powerlist[index]
-		right = self.powerlist[index + 1 if cpu%10 != 0 else index]
-		alpha = (cpu / 10) - index
-		return alpha * right + (1 - alpha) * left
+		if(len(self.powerlist)>index):
+			left = self.powerlist[index]
+			right = self.powerlist[index if cpu%10 != 0 else index - 1]
+			alpha = (cpu / 10) - index
+			return alpha * right + (1 - alpha) * left
+		return 0

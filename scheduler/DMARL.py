@@ -66,19 +66,20 @@ class DMARLScheduler(Scheduler):
         schedule_t = self.last_schedule if self.last_schedule is not None else schedule_next
         if self.training and len(self.buffer) >= 10:
             for replay in sample(self.buffer, 10):
-                backprop(replay[0], replay[1], replay[2], replay[3],
-                         self.optimizers[0])  # Choose the optimizer for a specific agent
+                backprop(replay[0], replay[1], replay[2], replay[3], self.optimizers,self.models)  # Choose the optimizer for a specific agent
         vl, pl, action = backprop(0, schedule_t, value_t, schedule_next, self.optimizers,
                                   self.models)  # Choose the agent's model and optimizer
         if rnd:
             decision = self.RandomPlacement(containerIDs)
             schedule_next = deepcopy(schedule_t)
+            
             for cid, hid in decision:
-                schedule_next[cid][hid + 2] = 1
-                schedule_next[cid][prev_alloc[cid] + 2] = 0
-            self.buffer.append((self.model, schedule_t, value_t, schedule_next))
+                if isinstance(cid, int)and isinstance(hid, int):
+                    schedule_next[cid][hid + 2] = 1
+                    schedule_next[cid][prev_alloc[cid] + 2] = 0
+            self.buffer.append((self.models, schedule_t, value_t, schedule_next))
         else:
-            self.buffer.append((self.model, schedule_t, value_t, schedule_next))
+            self.buffer.append((self.models, schedule_t, value_t, schedule_next))
             decision = []
             for cid in prev_alloc:
                 one_hot = action.tolist()
@@ -90,7 +91,7 @@ class DMARLScheduler(Scheduler):
         print(vl, pl)
         self.last_schedule = schedule_t
         if self.training and self.epoch % 10 == 0:
-            save_model(self.model, self.optimizer, self.epoch, self.accuracy_list)
+            save_model(self.models, self.optimizers, self.epoch, self.accuracy_list)
             with open(self.buffer_path, "wb") as handle:
                 pickle.dump(self.buffer, handle)
             plot_accuracies(self.accuracy_list)
@@ -101,13 +102,13 @@ class DMARLScheduler(Scheduler):
         selected_containers = []
         containers = self.env.containerlist
         if containers:
-            containers.sort(key=lambda c: c.deadline)
+            containers.sort(key=lambda c: c.totalExecTime if c is not None  else float('inf'))
             for container in containers:
-                if container.getHostID() == -1:
+                if  container and  container.getHostID() is not None and container.getHostID() == -1:
                     selected_containers.append(container)
         return selected_containers
 
     def placement(self, containerIDs):
-        first_alloc = np.all([not (c and c.getHostID() != -1) for c in self.env.containerlist])
+        first_alloc = all(c is None or c.getHostID() == -1 for c in self.env.containerlist)
         decision = self.run_DMARL(containerIDs, self.training and randint(0, 100) < 30)
         return decision

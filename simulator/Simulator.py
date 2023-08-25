@@ -67,7 +67,8 @@ class Simulator():
 		return containers
 
 	def getContainerByID(self, containerID):
-		return self.containerlist[containerID]
+		if isinstance(containerID, int):
+			return self.containerlist[containerID]
 
 	def getContainerByCID(self, creationID):
 		for c in self.containerlist + self.inactiveContainers:
